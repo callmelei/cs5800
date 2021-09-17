@@ -1,0 +1,226 @@
+\documentclass[11pt, a4paper]{article}
+
+% One of the following is required: problemset, recitation, quiz, exam
+% The following are required: handoutnum, assigneddate.
+% If there is only one date, set both duedate and assigneddate to be the same.
+% Do not change handoutnum or dates
+\usepackage[
+problemset,
+handoutnum=1,
+assigneddate={10 September 2021},duedate={17 September 2021},
+% % Uncomment the line below IF these are solutions
+% solution,
+% % Uncomment the line below IF you are a student submitting solutions
+% student,
+% % Replace with your name
+name={Lei Zhang},
+% Replace with names of all group members who collarborated on this.
+% If unsure about ordering, then you can follow the convention in theory
+% and list names alphabetically by last name.
+groupmembers={Renzhao Li}
+]{course-handouts-preamble}
+% Be careful of commas and put text with spaces within {curly braces}
+% Shouldn't end in a comma, should have commas between options.
+% Weird errors occur otherwise, I wasted some time failing to debug those.
+
+% DO NOT EDIT
+% These are fixed values that should not be changed during this course.
+\pgfkeys{/chp/fixed/.cd,
+instructorname = {Ravi Sundaram},
+coursename = {CS5800 Algorithms}}
+
+
+% Add any macros you want below, or put them in a separate file and \input{file}
+% keeping the preamble clean can keep you sane.
+
+%
+\begin{document}
+\insertHandoutInfoBox{}
+\ifbool{isexam}{\input{exam-blurb}} %This shouldn't throw an error, but comment it out if it does throw an error.
+% Do not touch either of the above lines.
+
+% Start adding content from below here.
+
+\newproblem{Asymptotics}{20}
+\begin{enumerate}
+    \item
+          Return a list of the following functions separated by the symbol $\equiv$ or
+          $\ll$, where $f\equiv g$ means $f=\Theta(g)$ and $f\ll g$ means
+          $f=O(g)$. For example, if
+          the functions are $\log n,n,5n,2^{n}$ a correct answer is $\log n\ll n\equiv5n\ll2^{n}$.
+          All logarithms are in base $2$. Prove each relation formally (the adjacent ones in the ordering you come up with).
+          \begin{enumerate}
+              \begin{multicols}{2}
+                  \item $1/n$
+                  \item $n\log n$
+                  \item $\log n!$
+                  \item $n^{1/\log n}$
+                  \item $\log^{2}n$
+                  \item $\log^{2}(n\log n)$
+              \end{multicols}
+          \end{enumerate}
+    \item
+          For some given functions, $f,g,h$, decide which of the following statements is correct and give a formal proof.
+          \begin{enumerate}
+              \item If $f(n) = O(g(n))$, then $f(n) = O(\log g(n))$
+              \item
+                    If $f(n) = \Theta (g(n))$, then $(f(n)^2) = \Theta (g(n)^3)$
+              \item
+                    If $f(n) = \Omega(n*g(n))$, $g(n) = \Omega(n*h(n))$, then $f(n) = \Omega (n^2*h(n))$
+          \end{enumerate}
+\end{enumerate}
+
+\begin{solution}
+    \begin{enumerate}
+        \item The ordering is:
+              \begin{equation*}
+                  1/n \ll n^{1/\log n} \ll \log^{2}n \equiv \log^{2}(n\log n) \ll n\log n \equiv \log n!
+              \end{equation*}
+              Proof: \\
+              We have $\lim_{n \to \infty} 1/n = 0$ and $\log n^{1/\log n} = 1$, thus $1/n \ll n^{1/\log n}$. \\
+              \\
+              Since $\lim_{n \to \infty} \log^{2}n = \infty$, it leads to $n^{1/\log n} \ll \log^{2}n$. \\
+              \\
+              Using L'Hospital's rule,
+              \begin{equation*}
+                  \lim_{n \to \infty} \frac{\log^{2}(n\log n)}{\log^{2}n} = \lim_{n\to \infty} \frac{\log (n\log n)}{\log n} = \lim_{n \to \infty} \frac{\log n + 1}{\log n} = 1
+              \end{equation*}
+              thus, $\log^{2}n \equiv \log^{2}(n\log n)$. \\
+              \\
+              Again,
+              \begin{equation*}
+                  \lim_{n \to \infty} \frac{n\log n}{\log^{2}(n\log n)} = \lim_{t \to \infty} \frac{t}{\log^2t} = \lim_{t \to \infty} \frac{t}{2\log t} = \infty
+              \end{equation*}
+              thus, $\log^{2}(n\log n) \ll n\log n$.\\
+              \\
+              Using Stirling's approximation that $\log n! = n\log n - n + O(\log n)$, then
+              \begin{equation*}
+                  \lim_{n \to \infty} \frac{\log n!}{n\log n} = \lim_{n \to \infty} \frac{n\log n - n + O(\log n)}{n\log n} = 1
+              \end{equation*}
+              thus, $n\log n \equiv \log n!$.\\
+              \textbf{Q.E.D.}
+              \\
+        \item
+              \begin{enumerate}
+                  \item False. We can raise a contradiction by letting $f(n) = n, g(n) = n^2$, but $f(n) = O(\log g(n))$ does not hold.
+                  \item False. We can raise a contradiction by letting $f(n) = n, g(n) = 2n$, then $(f(n)^2) = O(g(n)^3)$.
+                  \item True. Given that $f(n) \gg n*g(n)$ and $g(n) \gg n*h(n)$, we could find $c_1, c_2$ such that $f(n) \geqslant c_1ng(n)$ for $n \geqslant n_1$ and $g(n) \geqslant c_2nh(n)$ for $n \geqslant n_2$. Then, let $n_0 = \max\{n_1, n_2\}$, we have $f(n) \geqslant c_1c_2n^2h(n)$ for $n \geqslant n_0$. Thus, $f(n) \gg n*g(n)$.
+              \end{enumerate}
+    \end{enumerate}
+\end{solution}
+
+
+\newproblem{Induction}{10+15}
+\begin{enumerate}
+    \item Let $q$ be a real number other than 1. Use induction on $n$ to prove that $\sum_{i=0}^{n-1} q^i = (q^n-1)/(q-1)$
+
+    \item Show that any value of 12 cents or more can be attained using some arbitrary amount of 4 and 5 cent denomination coins (this problem is an example of strong induction).
+\end{enumerate}
+
+\begin{solution}
+    \begin{enumerate}
+        \item Proof:\\
+              Basic case: when $n=1$, $\sum_{i=0}^{n-1} q^i = 1 = (q^n-1)/(q-1)$\\
+              Hypothesis: assuming $\sum_{i=0}^{n-1} q^i = (q^n-1)/(q-1)$ holds when $n = k-1$\\
+              Then we can show that when $n = k$,
+              \begin{align*}
+                  \sum_{i=0}^{k-1} q^i & = \left(\sum_{i=0}^{k-2} q^i\right) + q^{k-1} \\
+                                       & = (q^{k-1}-1)/(q-1) + q^{k-1}                 \\
+                                       & = (q^k-1)/(q-1)
+              \end{align*}
+              \textbf{Q.E.D.}
+              \\
+        \item Proof:\\
+              Basic case:
+              \begin{align*}
+                  12 & = 4(3) + 5(0) \\
+                  13 & = 4(2) + 5(1) \\
+                  14 & = 4(1) + 5(2) \\
+                  15 & = 4(0) + 5(3)
+              \end{align*}
+              Hypothesis: there exsist a value of $k$ cents with $k \geqslant 15$ that can be attained using 4 and 5 cent denomination coins. \\
+              Then, $k-1$ can be expressed as $k-1 = k - 5(1) + 4(1)$, showing that it can be attained using coints of 4 and 5 cents. Similarly, we have $k-3 \geqslant 12$ which can also be attained using 4 and 5 cent denomination coins. By adding a 4 cent coin to the amount of $k-3$ cents, we now attain the value of $k - 1 + 3 = k + 1$.\\
+              \textbf{Q.E.D.}
+
+    \end{enumerate}
+\end{solution}
+
+\newproblem{Modular Arithmetic}{25}
+We are going to prove Fermat's Little Theorem.
+\begin{enumerate}
+    \item Let $p$ be a prime. Show that for any integer $x$ not divisible by $p$, $x^{p-1} \equiv 1 \text{ mod } p$. Hint: Consider the sequence $x, 2x, ..., (p-1)x$.
+\end{enumerate}
+
+\begin{solution}
+    Proof: Any two numbers of the sequence $x, 2x, ..., (p-1)x$, say $mx$ and $nx$, have different results on $\text{mod}~p$ since $x$ is not divisible by $p$. Then the sequence must have $1, 2, ..., p-1$ as their results of $\text{mod}~p$, i.e.,
+    \begin{align*}
+                        & x\cdot 2x \cdots (p-1)x \equiv 1\cdot 2 \cdots (p-1) \text{ mod } p \\
+        \Leftrightarrow & (p-1)!x^{p-1} \equiv (p-1)! \text{ mod } p                          \\
+        \Leftrightarrow & x^{p-1} \equiv 1 \text{ mod } p
+    \end{align*}
+\end{solution}
+
+\newproblem{Programming: modular-exponentiation}{30}
+
+The Hackerrank link will be posted on Canvas. In addition to the below description, it also contains more formal requirements for how your program should behave.
+
+\noindent{\bf Description:} Implement modular  exponentiation in a way
+that outputs the intermediary steps of the algorithm.
+
+\noindent{\bf Problem Statement:} \textcolor{blue}{**IMPORTANT**} You are NOT allowed to use built in language functions which trivialize the task of computing exponents. Any submissions which use this and avoid the task at hand will be given a 0.
+
+In this problem, you will have to efficiently implement modular exponentiation. Recall that the problem of modular-exponentiation is, given positive integers $a$ and $n$, and a non-negative integer $x$, calculate $a^x\mod n$.
+
+One way of doing this is exponentiation by squaring. It involves repeatedly squaring the base $a$ and reducing it using modulus: $a^2 \mod n$. Doing so yields the values $a$, $a^2\mod n$, $a^4\mod n$, $a^8\mod n, \dots$, etc. By combining these in the correct way, and using the fact that every number has a binary representation, we can compute $a^x\mod n$ in time $O(\log x)$.
+
+Implement modular-exponentiation by squaring, and output the intermediary values of $a^{2^i}\mod n$, as well as the final value $a^x\mod n$.
+
+Note that in addition to the  above, the challenge page also describes
+the input/output format, and gives a few examples. While some of it is reproduced here, the hackerrank version is authoritative.
+
+\textbf{Input Format}: The input will be exactly one line, with three space delimited integers $a$, $x$, and $n$.
+
+\textbf{Constraints}: The integers will satisfy $2 \leq a, x, n \leq 2^{64}$.
+
+\textbf{Output Format}: On the first line, output the $d$-bit binary representation of $x$.
+
+On the next $d$ lines, output the values:
+
+$a^1 \mod n$,
+
+$a^2 \mod n$,
+
+$a^4 \mod n$,
+
+\vdots
+
+$a^{2^d} \mod n$,
+
+On the last line, output $a^x \mod n$
+
+\textbf{Sample Input}:
+3 7 10
+
+Sample Output:
+111
+
+3
+
+9
+
+1
+
+7
+
+\textbf{Explanation}:
+7 in binary is written as 111.
+
+\begin{align*}
+    3^1 = 3 \mod 10
+    3^2 = 9 \mod 10
+    3^4 = 81 = 1 \mod 10
+    3^7 = 2187 = 7 \mod 10
+\end{align*}
+
+
+\end{document}
