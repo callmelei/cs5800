@@ -4,11 +4,8 @@ Created on Thu Sep 16 10:54:11 2021
 
 @author: lei
 """
-import numpy as np
 
-inputs = input('Enter inputs here: ')
-
-inputs = inputs.split(' ')
+inputs = input().split(' ')
 
 a, b, n = int(inputs[0]), int(inputs[1]), int(inputs[2])
 
@@ -23,17 +20,20 @@ while b > 0:
 
 print(*exponents, sep='')
 
-# squaring up
+# reverse the exponents to start from the lowest power
+exponents.reverse()
+
 remainder = 1
-val = 1
+temp = a
 for i in range(len(exponents)):
-    if i == 0:
-        val *= a
+    if i == 0: 
+        temp = temp % n
     else:
-        val *= val
+        # square the remainder of last step
+        temp = (temp**2) % n
+    print(temp)
     
     if exponents[i] == 1:
-        print(val % n)
-        remainder *= (val % n)
+        remainder = (remainder * temp) % n
 
-print(remainder % n)
+print(remainder)
