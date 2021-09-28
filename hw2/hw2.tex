@@ -128,6 +128,7 @@ Suppose you are given a array of $n$ distinct numbers which was sorted and then 
         \item Use binary search twice over the subarrays $A[1..k]$ and $A[k+1..n]$. If the number $x$ is found in either subarray, return that the array contains $x$. Otherwise, return that the array does not contain $x$. The time complexity of this approach is $T(n) = T(k) + T(n-k) = O(\log k) + O(\log (n-k)) = O(\log n)$.
     \end{enumerate}
 \end{solution}
+
 \newproblem{Hex}{20}
 Hex is a two-player game played on a diamond-shaped board made up of hexagons.  In the game, one player plays white pieces, while the other plays black, with play alternating between players and placement only allowed on unoccupied hexagons. Alternate sides of the board are designated white and black as shown above, and the goal of the game is to complete a chain of pieces between one player's two sides.
 
@@ -140,7 +141,24 @@ Hex is a two-player game played on a diamond-shaped board made up of hexagons.  
     \end{center}
 \end{figure}
 
+\begin{solution}
+    We can model each piece as a node and use an undirected graph represented by adjacency list to model all the pieces on the board. Each node has fields named color(black/white), isBorder(0 - inner nodes, 1 - on the left two edges of the board, 2 - on the right two edges of the board) and parent, a pointer that points to the parent node. The key is to give priority to sets containing nodes on the border when unit two sets. The pseudo code is:
+    \begin{lstlisting}
+        Input: Graph G(V, E)
+        for node in V:
+            node.parent = null
+        
+        for edge(node_i, node_j) in E:
+            if node_i.color == node_j.color:
+                parent_i, border_i = find_parent(node_i)
+                parent_j, border_j = find_parent(node_j)
+                if border_i + border_j == 3:
+                    return true 
+                unit(parent_i, parent_j)
 
+         return false           
+    \end{lstlisting}
+\end{solution}
 
 \newproblem{Thresholded Inversions and Doctor Manhattan}{20+20}
 
@@ -180,7 +198,7 @@ Hex is a two-player game played on a diamond-shaped board made up of hexagons.  
 \end{enumerate}
 
 \begin{solution}
-    HankerRank username: \textbf{zhang\_lei1}.
+    HackerRank username: \textbf{zhang\_lei1}
 \end{solution}
 
 \end{document}
