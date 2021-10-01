@@ -295,7 +295,7 @@
 
   % Problem set questions, instructor solutions
   \ifboolexpr{bool {isproblemset} and bool {issolution} and not bool {isstudent}}
-  {\handout{Out: \assigneddate}{Name: \name}{Due: \duedate}{Instructor Solutions to Problem Set \handoutnum}
+  {\handout{Out: \assigneddate}{\instructorname}{Due: \duedate}{Instructor Solutions to Problem Set \handoutnum}
   }{}
 
   % Recitations
@@ -346,7 +346,7 @@
 
 %first argument is short description, second is the number of points
 \newcommand{\newproblem}[2]{\increaseProblemCounter
-\section*{Problem \problemNumber~(#1) \hfill {#2}}
+\section*{Problem \problemNumber~(#1) \hfill \ifboolexpr{not bool {isrecitation}}{#2}}
 }
 
 %
@@ -393,6 +393,7 @@
 \newcommand{\reducesto}{$\leq_p$}
 \newcommand{\nphard}{\textbf{NP}-Hard}
 
+\newtheorem{theorem}{Theorem}
 \newtheorem*{definition}{Definition}
 \newtheorem*{problem}{\textsc{Problem}}
 \newtheorem*{lemma}{Lemma}
