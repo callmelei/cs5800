@@ -31,7 +31,6 @@ coursename = {CS5800 Algorithms}}
 
 % Add any macros you want below, or put them in a separate file and \input{file}
 % keeping the preamble clean can keep you sane.
-\usepackage{listings}
 
 \begin{document}
 % Do not change either of the below lines.
@@ -40,13 +39,13 @@ coursename = {CS5800 Algorithms}}
 
 % Start adding content from below here.
 
-Name: Lei Zhang \\
-Group members: Renzhao Li, Jinhong Yu\\
+
 \newproblem{Recurrences}{12+8}
 
 \begin{enumerate}[label=\alph*.]
 
-    \item \begin{enumerate}
+    \item Solve the following recurrences
+          \begin{enumerate}
               \item
                     $T(n) = 3T(n/2) + n$ (This is the recursion for Karatsuba's Algorithm)
 
@@ -74,36 +73,6 @@ Group members: Renzhao Li, Jinhong Yu\\
           }
 \end{enumerate}
 
-\begin{solution}
-    \begin{enumerate}[label=\alph*.]
-        \item \begin{enumerate}
-                  \item $T(n) = \Theta(n^{\log_23})$\\
-                        Proof: $a = 3, b = 2 \Rightarrow n^{\log_ba} = n^{\log_23}; f(n) = n$. \\
-                        Case 1 of Master Theorem: $f(n) = O(n^{\log_23-\eps})$ where $\eps = \log_23-1$, then $T(n) = \Theta(n^{\log_23})$.
-                  \item $T(n) = \Theta(n^2)$\\
-                        Proof: $a = 3, b = 2 \Rightarrow n^{\log_ba} = n^{\log_23}; f(n) = n^2$. \\
-                        Case 3 of Master Theorem: $f(n) = \Omega(n^{\log_23+\eps})$ where $\eps = 2-\log_23$ and $3f(n/2) \leq \tfrac{3}{4}f(n)$ where $c = \tfrac{3}{4}$, then $T(n) = \Theta(n^2)$.
-                  \item $T(n) = \Theta(n\log n)$ \\
-                        \begin{figure}[H]
-                            \begin{center}
-                                \includegraphics[width=0.45\textwidth]{1a.jpg} \\
-                                \caption{The recursion tree of Problem 1a(c).}
-                            \end{center}
-                        \end{figure}
-                  \item $T(n) = \Theta(n^{\log_45})$\\
-                        Proof: $a = 5, b = 4 \Rightarrow n^{\log_ba} = n^{\log_45}; f(n) = n$. \\
-                        Case 1 of Master Theorem: $f(n) = O(n^{\log_45-\eps})$ where $\eps = \log_45-1$, then $T(n) = \Theta(n^{\log_45})$.
-              \end{enumerate}
-
-        \item $T(n) = \Theta(n\log n)$\\
-              Proof: \begin{figure}[H]
-                  \begin{center}
-                      \includegraphics[width=0.45\textwidth]{1b.jpg} \\
-                      \caption{The recursion tree of Problem 1b.}
-                  \end{center}
-              \end{figure}
-    \end{enumerate}
-\end{solution}
 
 \newproblem{Rotated and Sorted}{10+10}
 Suppose you are given a array of $n$ distinct numbers which was sorted and then rotated $k$ indices, for some unknown integer $k$ between 1 and $n-1$. That is, you are given an array $A[1..n]$ such that some prefix $A[1..k]$ is sorted in increasing order, the corresponding suffix $A[k+1..n]$ is also sorted in increasing order, and $A[n]<A[1]$. For example, you might be given the following 16-element array (where $k=10$): $[9, 13, 16, 20, 21, 24, 25, 26, 27, 30, ||, 1, 2, 3, 5, 6, 8]$
@@ -112,23 +81,6 @@ Suppose you are given a array of $n$ distinct numbers which was sorted and then 
     \item Describe  and  analyze  an  algorithm  to  determine  if  the  given  array contains a given number $x$ that runs in $\Theta(\log n)$ time assuming you already know the value of $k$.
 \end{enumerate}
 
-\begin{solution}
-    \begin{enumerate}
-        \item Use binary search over the array to find $k$. The time complexity is $T(n) = T(n/2) + O(1) = O(\log n)$. The pseudo code is:
-              \begin{lstlisting}[language=Python]
-                  start = 0, end = len(A) - 1
-                  while start < end:
-                    mid = (start + end) / 2
-                    if A[mid] > A[end]:
-                        start = mid + 1
-                    else:
-                        end = mid
-                  return start
-              \end{lstlisting}
-
-        \item Use binary search twice over the subarrays $A[1..k]$ and $A[k+1..n]$. If the number $x$ is found in either subarray, return that the array contains $x$. Otherwise, return that the array does not contain $x$. The time complexity of this approach is $T(n) = T(k) + T(n-k) = O(\log k) + O(\log (n-k)) = O(\log n)$.
-    \end{enumerate}
-\end{solution}
 
 \newproblem{Hex}{20}
 Hex is a two-player game played on a diamond-shaped board made up of hexagons.  In the game, one player plays white pieces, while the other plays black, with play alternating between players and placement only allowed on unoccupied hexagons. Alternate sides of the board are designated white and black as shown above, and the goal of the game is to complete a chain of pieces between one player's two sides.
@@ -142,24 +94,7 @@ Hex is a two-player game played on a diamond-shaped board made up of hexagons.  
     \end{center}
 \end{figure}
 
-\begin{solution}
-    We can model each piece as a node and use an undirected graph represented by adjacency list to model all the pieces on the board. Each node has fields named color(black/white), isBorder(0 - inner nodes, 1 - on the left two edges of the board, 2 - on the right two edges of the board) and parent, a pointer that points to the parent node. The key is to give priority to sets containing nodes on the border when unit two sets. The pseudo code is:
-    \begin{lstlisting}[language=Python]
-        #Input: Graph G(V, E)
-        for node in V:
-            node.parent = null
-        
-        for edge(node_i, node_j) in E:
-            if node_i.color == node_j.color:
-                parent_i, border_i = find_parent(node_i)
-                parent_j, border_j = find_parent(node_j)
-                if border_i + border_j == 3:
-                    return true 
-                unit(parent_i, parent_j)
 
-         return false           
-    \end{lstlisting}
-\end{solution}
 
 \newproblem{Thresholded Inversions and Doctor Manhattan}{20+20}
 
@@ -197,13 +132,5 @@ Hex is a two-player game played on a diamond-shaped board made up of hexagons.  
           Print the answer modulo: $10^9 + 7$.
 
 \end{enumerate}
-
-\begin{solution}
-    \begin{enumerate}
-        \item The idea is to use the divide-and-conquer approach similar to merge sort. By dividing the array into two subarrays we first count the threshould inversion inside the left and right subarray, and then count the threshould inversions between them. The key is to use binary search to find the smallest number in the left subarray that satisfies $A[i] > tA[j]$ where $i\in [\textmd{left}, \textmd{mid}]$ and $j \in [\textmd{mid}+1, \textmd{right}]$. The time complexity of this appraoch is $T(n) = 2T(n/2) + O(n\log n) = O(n\log^2 n)$.
-        \item HackerRank username: \textbf{zhang\_lei1} \\
-              Link to the submission: \url{https://www.hackerrank.com/contests/cs5800-fall21-pset-2/challenges/counting-trouble/submissions/code/1337048276}
-    \end{enumerate}
-\end{solution}
 
 \end{document}
