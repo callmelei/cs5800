@@ -63,18 +63,21 @@ For example, suppose we have the array $A = [8, 7, 8, 9]$.  Alice can choose 9 i
 
 \begin{solution}
     \begin{enumerate}
-        \item The recursion to solve this problem is that for the remaining cards $A[i..j]$, the score Alice could get, denoted by $S[i,j]$, is the maximum of the two situations: 1) she picks the first card, $S[i,j] = A[i] + S[i+1,j]$; 2) she picks the last card, $S[i,j] = A[j] + S[i,j-1]$. The terminating case is that $i=j$ where $S[i,j] = A[i]$.
+        \item The recursion to solve this problem is that for the remaining cards $A[i..j]$, the score Alice could get, denoted by $OPT(i,j)$, is the maximum of the two situations: 1) she picks the first card $i$, and since Bob plays optimally he would pick from the cards $A[i+1..j]$ such that Alice has the lower score, i.e., Alice would be left with the worse case of $A[i+2..j]$ and $A[i+1..j-1]$ after Bob picked. Thus, $OPT(i,j) = A[i] + \min \{OPT(i+2,j), OPT(i+1,j-1)\}$; 2) she picks the last card, similarly, $OPT(i,j) = A[j] + \min\{OPT(i+1,j-1), OPT(i,j-2)\}$.
         \item \begin{equation*}
-                  S[i,j] = \left\{
+                  OPT(i,j) = \left\{
                   \begin{array}{lcl}
-                      \max \{A[i] + S[i+1,j], A[j] + S[i,j-1]\} & \mbox{if} & i<j \\
-                      A[i]                                      & \mbox{if} & i=j
+                      0        & \mbox{if} & i>j \\
+                      A[i]     & \mbox{if} & i=j \\
+                      \max \left\{\begin{array}{ll} A[i] + \min \{OPT(i+2,j),OPT(i+1,j-1)\}, \\
+                          A[j] + \min \{OPT(i+1,j-1),OPT(i,j-2)\}\end{array}
+                      \right\} & \mbox{if} & i<j \\
                   \end{array}\right.
               \end{equation*}
-        \item The final value to return is $S[1,n]$
+        \item The final value to return is $OPT(1,n)$
         \item The iterative approach would fill out an $n\times n$ matrix and the base case if the diagonal where $i=j$. The area below the diagonal is $0$, while the upper triangle can be filled out using the recursion described above.
         \item The number of subproblems is $\theta(n^2)$ as we have to fill out half of the $n \times n$ matrix.
-        \item Each subproblem takes time of $\theta(1)$.
+        \item Each subproblem takes constant time, i.e. $\theta(1)$.
         \item Total running time is $\theta(n^2)$.
     \end{enumerate}
 \end{solution}
@@ -84,7 +87,23 @@ A ternary tree a rooted tree where each node (except the leaves) have three chil
 
 You want to find the maximum path sum starting at the root of the tree and following any path on the tree from root to a leaf. From every node in your path, except the terminal leaf node, you have three options for which child to use for your path.
 
-
+\begin{solution}
+    \begin{enumerate}
+        \item The recursion for this problem is that for each node the maximum path starting from the current node is the one that contains the maximum path from its children. The algorithm terminates if the node has no children.
+        \item For each node $p$ in tree $T$:
+              \begin{equation*}
+                  OPT(p) = \left\{ \begin{array}{ll}
+                      p.val                                      & \mbox{if } p.child=\O \\
+                      p.val + \max\limits_{c \in p.child} OPT(c) & \mbox{otherwise}
+                  \end{array} \right.
+              \end{equation*}
+        \item The final value is returned by $OPT(\mbox{root})$
+        \item The iteration approach need to fill out a $k \times 3^{k-1}$ table. The first row stores the label integer of each node at the last level. Then for the rest rows, each cell can be calculated by looking at the $3$ cells on the previous row corresponding to its children node.
+        \item The number of subproblems is exponential.
+        \item Each subproblem takes constant time, i.e., $\theta(1)$.
+        \item Total running time is exponential.
+    \end{enumerate}
+\end{solution}
 
 \newproblem{Counting Coin Changes}{25}
 Given a denomination of positive coins $c_1, c_2, \dots, c_m$ and a value $n$ as input how many ways can you make change for $n$. For example, with coins being $\{1, 2, 3\}$ the number of ways to get the value $4$ is 4 as follows: $\{1, 1, 1, 1\}, \{1, 1, 2\}, \{2, 2\}, \{3, 1\}$. With coins being $\{2, 5, 3, 6\}$ the number of ways to get the value $10$ is 5 as follows: $\{2, 2, 2, 2, 2\}, \{2, 2, 3, 3\}, \{2, 2, 6\}, \{2, 3, 5\}, \{5, 5\}$.
