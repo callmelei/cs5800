@@ -5,6 +5,8 @@ Created on Wed Sep 22 21:36:14 2021
 @author: lei
 """
 
+import numpy as np
+
 def kRotate(A):
     l, r = 0, len(A) - 1
     while l < r:
@@ -18,4 +20,4 @@ def kRotate(A):
 A = [4, 5, 1, 2, 3]
 A = [9, 10, 11, 13, 15, 4, 6, 8]
 print(kRotate(A))
-        
+
