@@ -1,0 +1,23 @@
+\begin {tikzpicture}[-latex, auto, node distance =5 cm and 5cm, on grid, 
+  semithick, 
+  state/.style ={ circle, top color =white, 
+    draw,  text=black,  minimum width =1 cm}]
+  \node[state] (T) {$T$};
+  \node[state] (E) [below = of T] {$E$};
+  \node[state] (D) [left = of T] {$D$};
+  \node[state] (A) [left = of D] {$A$};
+  \node[state] (S) [left =of A] {$S$};
+  \node[state] (C) [below = of D] {$C$};
+  \node[state] (B) [below = of A] {$B$};
+  \path (S) edge [] node[above] {$4$} (A);
+  \path (S) edge [] node[below] {$6$} (B);
+  \path (A) edge [] node[above] {$4$} (D);
+  \path (D) edge [] node[above] {$4$} (T);
+  \path (B) edge [] node[below] {$6$} (C);
+  \path (C) edge [] node[below] {$4$} (E);
+  \path (E) edge [] node[right] {$10$} (T);
+  \path (A) edge [bend left = -15] node[below] {$4$} (E);
+  \path (C) edge [] node[right] {$2$} (D);
+
+  \path (A) edge [dashed] node[below] {$2$} (S);
+\end{tikzpicture}

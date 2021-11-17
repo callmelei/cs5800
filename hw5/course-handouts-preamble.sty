@@ -1,0 +1,404 @@
+% This is a package that to create handouts in courses
+% Particular setups exist for problem sets, recitations, quizzes, exams
+% as well as solutions for each of these.
+%
+% Author: Akshar Varma
+% Some of the commands, particularly \handout were inspired by LaTeX code and
+% templates used in Daniel Wichs' courses and I'm sure I also picked up ideas
+% from Huy Nguyen's problem set and scribe note templates.
+% I have since changed/rewritten almost all of it, but they did inspire aspects.
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{course-handouts-preamble}[Custom preamble used for all manner of handouts in courses: problem sets, exams, recitations, quizzes, their solutions, etc.]
+%
+%
+
+% All packages that are being required with brief reason.
+%
+\RequirePackage[left=0.1\paperwidth, right=0.1\paperwidth, textwidth=0.8\paperwidth, top=0.1\paperheight, bottom=0.1\paperheight, textheight=0.8\paperheight, marginparwidth=0.15\paperwidth, marginparsep=3ex]{geometry}
+% Also set all indentation to 0.
+% \setlength\parindent{0pt}
+%\RequirePackage[indent=0pt, parfill=3em]{parskip}
+\RequirePackage{parskip}
+
+\RequirePackage{amsmath}        % Math typesetting
+\RequirePackage{amsthm}         % Theorem and other such environments for math
+\RequirePackage{amsfonts}       % Fonts specific to math
+\RequirePackage{amssymb}        % Math symbols
+\RequirePackage{latexsym}       % LaTeX symbols font
+\RequirePackage{nicefrac}       % For better fractions in text: 1/2 will be better.
+
+\RequirePackage[dvipsnames]{xcolor} % See also: https://en.wikibooks.org/wiki/LaTeX/Colors
+\RequirePackage{graphicx}              % For including images in the PDF.
+\graphicspath{{./graphs/},{./images/},{./files/}} %folders to check for images/graphs in.
+\RequirePackage{float}          % nicer tables/figures/other floating boxes
+\RequirePackage{booktabs}          % For tables
+\RequirePackage{array}          % For better tables
+\RequirePackage{enumitem}       % Better enumerate environment
+\RequirePackage{tikz}           % For any drawings done in LaTeX itself.
+\usetikzlibrary {positioning}
+
+\RequirePackage{etoolbox}       % if/then/else, booleans, and other tools and goodies
+\RequirePackage{fancyhdr}       % Page headers for exams, details are available below.
+\RequirePackage{marginnote}     % margin graffiti (for side comments in solutions).
+\newcommand{\graffiti}[1]{\marginnote{\raggedright\textsl{#1}}}
+% This command is all that is needed, so putting it here instead of with others.
+
+\RequirePackage{multicol}      % For dealing with content on multiple columns
+\RequirePackage{hyperref}      % For dealing with URLs
+\hypersetup{                   % some setup for URLs
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\RequirePackage{algorithm}
+% \RequirePackage{algorithmic}    % Use algpseudocode instead
+\RequirePackage{algpseudocode}
+\RequirePackage{listings}       % For displaying code
+\RequirePackage{csquotes}       % For displayquotes environment
+
+% Unsure if needed but might be useful when adding PDFs/tikz figures as is.
+\RequirePackage{standalone}
+%
+% All require packages should end above here. Other than pgfkeys and pgfopts
+%
+
+% Define new boolean variables
+\renewcommand*{\do}[1]{\providebool{#1}}
+\docsvlist{issolution,isstudent,isinstructor,
+  isproblemset,isrecitation,isexam,isquiz,iscompendium,
+  isexamversionA,isexamversionB}
+\renewcommand*{\do}[1]{\global\boolfalse{#1}}
+\docsvlist{issolution,isstudent,isinstructor,
+  isproblemset,isrecitation,isexam,isquiz,iscompendium,
+  isexamversionA,isexamversionB}
+
+
+% The following is for setting options for this package
+% Primarily used for author/course name, settings type of handout and so on.
+%
+% kvoptions-patch was suggested to be added before pgfkeys
+% so that spaces and commas in values are handled better.
+% \RequirePackage{kvoptions-patch}
+% A quick overview and some simple examples for pgfkeys can be found here:
+% http://www.tug.org/TUGboat/tb30-1/tb94wright-keyval.pdf
+\RequirePackage{pgfkeys}
+% Similarly, for pgfopts, the manual is a good thing to read:
+% http://mirrors.ctan.org/macros/latex/contrib/pgfopts/pgfopts.pdf
+\RequirePackage{pgfopts}
+% Another simple example pgfkey setup (beyond what's there in the Wright PDF)
+% is available at: https://tex.stackexchange.com/a/34318
+% The full documentaton is a section in the PGF manual:
+% http://mirrors.ctan.org/graphics/pgf/base/doc/pgfmanual.pdf
+\pgfkeys{                       % The MAIN things.
+  /chp/.cd,
+  /chp/.is family,
+  fixed/instructorname/.store in=\instructorname,
+  fixed/coursename/.store in=\coursename,
+  duedate/.store in=\duedate,
+  assigneddate/.store in=\assigneddate,
+  handoutnum/.store in=\handoutnum, %PS 3, Recitation 5, Exam 2, Exam Final, etc.
+}
+
+% Booleans in use
+\pgfkeys{chp,
+  solution/.is if=issolution,   % If this is a solution handout
+  student/.is if=isstudent,     % If this is being submitted by a student
+  instructor/.is if=isinstructor,     % If this is by an instructor
+  problemset/.is if=isproblemset, % If this is a problem set
+  recitation/.is if=isrecitation, % ... recitation
+  quiz/.is if=isquiz,             % ... quiz
+  exam/.is if=isexam,             % ... exam
+  compendium/.is if=iscompendium, % ... compendium
+  examversionA/.is if=isexamversionA, % bool is true if exam version A, false if B.
+  examversionB/.is if=isexamversionB, % bool is true if exam version A, false if B.
+}
+
+% Students need to fill these.
+\pgfkeys{chp,
+  name/.store in=\name,
+  name/.default = {Fill submitter's name},
+  name/.initial = {Fill submitter's name},
+  name/.value required,
+  groupmembers/.store in=\groupmembers,
+  groupmembers/.default = {Fill collaborators' names},
+  groupmembers/.initial = {Fill collaborators' names},
+  groupmembers/.value required
+}
+
+%
+% This was an old approach that was discontinued.
+% Keeping for posterity because I spent a long time fuddling over this.
+%
+% \pgfkeys{chp,
+%   % Using choice.
+%   type/.is choice,
+%   type/.store in=\what,
+%   % Whatever is chosen, gets put into \what
+%   % The values below are used when one needs to type it into the file.
+%   type/problemset/.initial={Problem Set},
+%   type/recitation/.initial={Recitation},
+%   type/exam/.initial = {Exam},
+%   type/quiz/.initial={Quiz},
+%   type/problemset student solutions/.initial={Problem Set Student Solutions},
+%   type/problemset instructor solutions/.initial={Problem Set Instructor Solutions},
+%   type/recitation solutions/.initial={Recitation Solutions},
+%   type/exam solutions/.initial={Exam Solutions},
+%   type/quiz solutions/.initial={Quiz Solutions}
+% }
+
+
+
+% This is all that is needed for using pgfopts.
+% \ProcessPgfOptions* -> will use /course-handouts-preamble/ (current filename) as the path
+% Better to provide the key path.
+\ProcessPgfOptions{chp}
+% In our case, chp is a shorthand for course-handouts-preamble
+% which is used as a scope, in case pgfopts is used in other places.
+
+\AfterEndPreamble{
+  % Mostly error checking in the options that have been passed in.
+
+  % Once the user has decided what type of handout it is, set the appropriate
+  % string into the macro \handoutNameString for easier use.
+  % This is in a hook since we do not know the value of \what until the user
+  % selects the option when importing the package.
+
+  % Don't select more than one handout type.
+  % I don't know how to do this any better.
+  \newcounter{numTypes}
+  \setcounter{numTypes}{0}
+  \ifbool{isproblemset}{\stepcounter{numTypes}}{}
+  \ifbool{isrecitation}{\stepcounter{numTypes}}{}
+  \ifbool{isquiz}{\stepcounter{numTypes}}{}
+  \ifbool{isexam}{\stepcounter{numTypes}}{}
+  \ifbool{iscompendium}{\stepcounter{numTypes}}{}
+
+  \ifnumequal{\value{numTypes}}{1}{}{
+    % If the count is NOT 1.
+    \PackageError{Course Handouts Preamble}{You must pass in exactly one of problemset, exam, quiz, recitation, or compendium as an option.}{}}
+
+
+  % Only one of examversion A and B should be selected.
+  \ifboolexpr{bool {isexamversionA} and bool {isexamversionB}}{
+  \PackageError{Course Handouts Preamble}{You cannot pass in both examversionA and examversionB. Please choose one and remove the other option from the list when importing this package.}{}}{}
+
+  % Only one of student and instructor should be selected.
+  \ifboolexpr{bool {isstudent} and bool {isinstructor}}{
+    \PackageError{Course Handouts Preamble}{You cannot pass in both student and instructor. Please choose one and remove the other option from the list when importing this package.}{}}{}
+
+  % Throw an error if assigneddate is not defined.
+  \ifundef{\assigneddate}{
+  \PackageError{Course Handouts Preamble}{You must provide an assigned date in the options, even if it is {}}{}}{}
+
+  \ifundef{\duedate}{
+  \PackageWarning{Course Handouts Preamble}{You haven't provided a due date in the options, it is recommended to do so if applicable.}{}}{}
+
+  %
+  % This was an old approach that was discontinued.
+  % Keeping for posterity because I spent a long time fuddling over this.
+  %
+  % \pgfkeys{chp,
+  %   handoutname/.style = {type/#1/.get = \handoutNameString},
+  %   handoutname=\what
+  % }
+
+}
+%
+% All package option selection code ends here.
+% Everything below is code that sets up other commands used elsewhere.
+%
+
+% Set exam version text.
+\newcommand{\examversion}{\ifbool{isexamversionA}{\textbf{A}}{\textbf{B}}}
+%
+
+% If solution, add Solution to \solutionText
+% Further, if not a student, then add Instructor before Solution
+\newcommand\solutionText{\ifbool{issolution}{\ifbool{isstudent}{}{Instructor }Solution}{}}
+%
+
+% Customize the page number displayed based on type of handout
+\newcommand\pageNumberText{
+  \ifbool{isproblemset}{Problem set \handoutnum{}, \solutionText{} (\assigneddate{}~--~\duedate{});\hfill}{}
+  \ifbool{isrecitation}{Recitation \handoutnum{}, \solutionText{} (\assigneddate{}~--~\duedate{})}{}
+  \ifbool{isexam}{Exam \handoutnum{} Version: \examversion, \solutionText{} \assigneddate{}}{}
+  \ifbool{isquiz}{Quiz \handoutnum{}, \solutionText{} \assigneddate{}}{}
+  \ifbool{iscompendium}{Compendium \solutionText{}}{}
+}
+\renewcommand{\thepage}{\pageNumberText{} \hfill Page \arabic{page}}
+%
+
+
+% Do a fancy header if this is an exam, but not if it is the solution for exams.
+\ifbool{isexam}                    %Only kicks in for exams
+{\pagestyle{fancy}
+  \fancyhf{}
+  \renewcommand{\thepage}{\pageNumberText}
+  \lhead{\thepage}
+  \rhead{\notbool{issolution}{\textbf{NAME}: {\rule{15em}{0pt}}}{}}
+  \fancyfoot[C]{Page: \arabic{page}}
+}{}
+%
+
+% This is the thing that is most similar to Daniel's latex.
+% I modified his handout command to make it use more LaTeX and less TeX.
+% At least I think that is what I did.
+\setlength{\fboxsep}{1.5ex}
+\setlength{\fboxrule}{0.25ex}
+% Arguments are in order: assigned date, Name, due date and central text
+\newcommand{\handout}[4]{
+  \noindent
+  \begin{center}
+    \framebox{
+      \parbox{0.9\textwidth}{
+        \begin{minipage}[c][1.5em][t]{0.9\textwidth}
+          \textbf{\coursename} \hfill \textit{#1}
+          \end{minipage}
+        \begin{minipage}[c][2em][c]{0.9\textwidth}
+          {\Large \hfill #4  \hfill}
+          \end{minipage}
+        \begin{minipage}[c][1.5em][b]{0.9\textwidth}
+          \textbf{#2} \hfill \textit{#3}
+          \end{minipage}
+      }
+    }
+  \end{center}
+  \vspace{2ex}
+}
+%
+
+%
+% This is the thing that does the logic heavy lifting of figuring out how to use
+% the \handout command appropriately given the type of handout.
+% These also ensure consistency throughout the course.
+% Change with caution and care.
+%
+\newcommand{\insertHandoutInfoBox}{
+  % TODO: There seem to be empty/useless {} in almost every one of the statments below
+  % Most probably they are useless and nothing goes wrong before LaTeX ignores them.
+
+
+  % Remember, arguments in order: assigned date, Name, due date and central text
+
+  % Problem set questions, NOT solutions
+  \ifboolexpr{bool {isproblemset} and not bool {issolution}}
+  {\handout{Out: \assigneddate}{\instructorname}{Due: \duedate}{Problem Set \handoutnum}}{}
+
+  % Problem set questions, student's solutions
+  \ifboolexpr{bool {isproblemset} and bool {issolution} and bool {isstudent}}
+  {\handout{Out: \assigneddate}{Name: \name}{Due: \duedate}{Solutions to Problem Set \handoutnum}
+    \textbf{Group members:} \groupmembers{}
+  }{}
+
+  % Problem set questions, instructor solutions
+  \ifboolexpr{bool {isproblemset} and bool {issolution} and not bool {isstudent}}
+  {\handout{Out: \assigneddate}{\instructorname}{Due: \duedate}{Instructor Solutions to Problem Set \handoutnum}
+  }{}
+
+  % Recitations
+  \ifboolexpr{bool {isrecitation} and not bool {issolution}}
+  {\handout{}{\instructorname}{Date: \duedate}{Recitations \handoutnum}
+  }{}
+
+  % Recitations solutions
+  \ifboolexpr{bool {isrecitation} and bool {issolution}}
+  {\handout{}{\instructorname}{Date: \duedate}{Solutions to Recitations \handoutnum}{}}
+
+  % Quiz
+  \ifboolexpr{bool {isquiz} and not bool {issolution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Quiz \handoutnum}{}}
+
+  % Quiz student solutions
+  \ifboolexpr{bool {isquiz} and bool {issolution} and bool {isstudent}}
+  {\handout{}{Name: \name}{Date: \assigneddate}{Solutions to Quiz \handoutnum}{}}
+
+  % Quiz instructor solutions
+  \ifboolexpr{bool {isquiz} and bool {issolution} and not bool {isstudent}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Instructor Solutions to Quiz \handoutnum}{}}
+
+  % Exam
+  \ifboolexpr{bool {isexam} and not bool {issolution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Exam \handoutnum}{}}
+
+  % Exam solutions
+  \ifboolexpr{bool {isexam} and bool {issolution}}
+  {\handout{}{\instructorname}{Date: \assigneddate}{Solutions to Exam \handoutnum}{}}
+
+
+  % assigned date, Name, due date and central text
+  % Compendium
+  \ifboolexpr{bool {iscompendium} and not bool {issolution}}
+  {\handout{}{\instructorname}{}{Compendium}{}}
+
+  % Compendium with solutions
+  \ifboolexpr{bool {iscompendium} and bool {issolution}}
+  {\handout{}{\instructorname}{}{Compendium with Solutions}{}}
+}
+
+
+% These are the things that'll be used the most.
+\newcounter{problemCounter} % count problems
+\newcommand{\problemNumber}{\arabic{problemCounter}}  % problem number as printed
+\newcommand{\increaseProblemCounter}{\addtocounter{problemCounter}{1}}  % increment++
+
+%first argument is short description, second is the number of points
+\newcommand{\newproblem}[2]{\increaseProblemCounter
+\section*{Problem \problemNumber~(#1) \hfill \ifboolexpr{not bool {isrecitation}}{#2}}
+}
+
+%
+% The solutions/hints commands/environments are a mix between Daniel's and Huy's.
+% I think. In any case, they've changed since then.
+%
+\renewcommand{\qed}{\hfill$\blacksquare$}
+\newenvironment{solution}{\par\noindent\subsection*{Solution:}}{\qed}
+\newenvironment{solsketch}{\par\noindent\subsection*{Solution Sketch:}}{\qed}
+
+\newcommand{\hint}[1]{[\textit{\textbf{Hint}: {#1}}]}
+\newcommand{\markbonusproblem}{\textbf{(\textasteriskcentered)}}
+
+%
+% Now it is the simply easy/boring stuff.
+% Put more macros here, as needed.
+%
+% The first few are useful for latex stuff.
+\renewcommand{\eqref}[1]{Equation~(\ref{eq:#1})}
+
+%
+% The following are all useful shorthands for various math stuff.
+%
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\DSop}[2]{\mathtt{#1}(#2)} % Used in way too many places
+
+% N, Z, Q, R, C
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+
+
+\newcommand{\eps}{\epsilon}
+\renewcommand{\l}{\ell}
+\newcommand{\half}{\frac{1}{2}}
+
+\newcommand{\ceil}[1]{\lceil #1 \rceil}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+
+
+% Was used for NP Completeness related things.
+\newcommand{\reducesto}{$\leq_p$}
+\newcommand{\nphard}{\textbf{NP}-Hard}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem*{definition}{Definition}
+\newtheorem*{problem}{\textsc{Problem}}
+\newtheorem*{lemma}{Lemma}
+\newtheorem*{claim}{Claim}
+
+% Two versions for exams. Have boolean always defined
+\newbool{VER_A}
+\boolfalse{VER_A}
