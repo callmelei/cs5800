@@ -17,7 +17,7 @@ name={Lei Zhang},
 % Replace with names of all group members who collarborated on this.
 % If unsure about ordering, then you can follow the convention in theory
 % and list names alphabetically by last name.
-groupmembers={Fill collaborators' names}
+groupmembers={}
 ]{course-handouts-preamble}
 
 % Be careful of commas and put text with spaces within {curly braces}
@@ -82,12 +82,20 @@ All of the following problems delve into the specific information that can be gl
 $f$ from $s$ to $t$. Assume that the capacity of every edge is a positive integer. Describe an $O(n+m)$ time algorithm for updating the flow $f$ in each of the following two cases.
 \begin{enumerate}
 \item The capacity of an edge e increases by $1$.
-\item The capacity of an edge e decreases by $1$. (\textit{Hint: decrease the flow from $s$ to $t$ through $e$ by $1$, then run one iteration of augmenting path.})
+\item The capacity of an edge e decreases by $1$. (\textit{Hint: decrease the flow from $s$ to $t$ through $e$ by $1$, then run one iteration of augmenting path.}.
 \end{enumerate}
 
 \item Let $G = (V,E)$ be a flow network with source $s$ and sink $t$. We say that an edge $e$ is a bottleneck if it crosses every minimum-capacity cut separating $s$ from $t$. Give an efficient algorithm to determine if a given edge $e$ is a bottleneck in $G$.
 
 \end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+  \item The maximum flow for the new graph $G'$ is either $v(f)$ or $v(f) + 1$. This can be done by running one more iteration of augmenting path on $G'$ after flow equals $f$, which takes time of $O(m+n)$. If a new augmenting path is found, then the maximum flow is $v(f) + 1$; otherwise, the max flow remains $v(f)$.
+  \item The maximum flow is either $v(f)$ or $v(f) - 1$. If the edge e satisfies that $c(e) \geq f(e) + 1$, then decreasing the e's capacity by $1$ would not affect the maximum flow of the new graph $G'$. Otherwise, we pick a path $P$ from $s$ to $t$ through $e$ and subtract $f(e_i)$ for every edge $e_i$ in the path, which takes at most $O(m+n)$. Then, we run one iteration of augmenting path on the graph, taking time $O(m+n)$. If a new augmenting path is found, then decreasing e's capacity by $1$ would not lower the max flow and it's still $v(f)$. If no new augmenting path is found, then the max flow of the new graph is $v(f) - 1$.
+  \item First run the Ford-Fulkerson algorithm of the graph to get the residual graph $G_f$. Then run DSF on $G_f$ starting from $s$ and keep track of every node visited in set $S$. Then, reverse every edge in the residual graph and run DSF from $t$ and keep visited nodes in set $T$. The edges that have one node in $S$ and the other in $T$ are bottleneck edges.
+\end{enumerate}
+\end{solution}
 
 
 \newproblem{Orwellian viruses}{25}
@@ -98,7 +106,9 @@ We have two methods we can use while trying to stop the virus. The first is to s
 
 We come to you for help. We'll tell you which computers are connected to which, and we'll tell you which LAN cables are visible and can be cut. As someone who has mastered algorithms, help us save the foundations of mathematics. That is, come up with an efficient algorithm such that the sum of the number of computers shutdown and LAN cables cut is minimized. We'll need proof that the algorithm works and that it works fast before remodeling the lab accordingly so make sure to provide proof of correctness and analyze the running time.
 
-
+\begin{solution}
+We build a flow network where $s$ is the infected computer and $t$ is Shangri-La. Each of the cables connecting computers is treated as two parallel edges of opposite direction with unit capacity except those hiddin inside wall which have capacity of infinity. Then, we run Ford-Fulkerson on the graph and obtain the residual graph. The max flow $f$ is minimum number of cables need to be cut. To find all those cables, we run DFS from $s$ and keep all the nodes visited in a set $S$. Then, the cables to be cut are those that connect the computers in $S$ to the rest of the graph. If the cable is hidden, then shutdown the connected computer in set $S$.
+\end{solution}
 
 \newproblem{Advertising}{25}
 
