@@ -53,46 +53,55 @@ coursename = {CS5800 Algorithms}}
 \newproblem{Reducing 2-coloring to SAT}{15}
 
 \begin{problem}[\textsf{2-Coloring}]
-  Given an undirected graph $G=(V, E)$, where the graph has $|V|$ nodes and $|E|$ edges, is there a way to color the nodes $V$ either black or white such that for every edge, it has two different colors on its endpoints?
+Given an undirected graph $G=(V, E)$, where the graph has $|V|$ nodes and $|E|$ edges, is there a way to color the nodes $V$ either black or white such that for every edge, it has two different colors on its endpoints?
 \end{problem}
 \begin{problem}[\textsc{SAT}]
-  Given $n$ variables $x_1, x_2, \dots, x_n$, and $m$ clauses $C_1, C_2, \dots, C_m$ with each clause is an OR between some literals $z_i$ and each literal is either a variable or the negation of a variable, does there exist an assignment of True/False to the variables such that $C_1 \land C_2 \land \dots \land C_m$ is True?
+Given $n$ variables $x_1, x_2, \dots, x_n$, and $m$ clauses $C_1, C_2, \dots, C_m$ with each clause is an OR between some literals $z_i$ and each literal is either a variable or the negation of a variable, does there exist an assignment of True/False to the variables such that $C_1 \land C_2 \land \dots \land C_m$ is True?
 \end{problem}
 \begin{enumerate}[label=\alph*.]
-\item Reduce the \textsc{2-Coloring} problem to \textsc{SAT}. That is, write a polynomial sized set of clauses (need not have 3 literals each) using a polynomial number of variables such that if there is a satisfying assignment if and only if there is a \textsc{2-Coloring}. Briefly describe what the variables and clauses represent.
+  \item Reduce the \textsc{2-Coloring} problem to \textsc{SAT}. That is, write a polynomial sized set of clauses (need not have 3 literals each) using a polynomial number of variables such that if there is a satisfying assignment if and only if there is a \textsc{2-Coloring}. Briefly describe what the variables and clauses represent.
 
-  \hint{Note that  $(x_1 \lor x_2) \land (\neg x_1 \lor \neg x_2)$ is satisfied when exactly one of $x_1, x_2$ are true. Use this fact to enforce the coloring constraint.}
-\item Does this reduction imply that \textsc{2-Coloring} is NP-Complete? Why?
+        \hint{Note that  $(x_1 \lor x_2) \land (\neg x_1 \lor \neg x_2)$ is satisfied when exactly one of $x_1, x_2$ are true. Use this fact to enforce the coloring constraint.}
+  \item Does this reduction imply that \textsc{2-Coloring} is NP-Complete? Why?
 \end{enumerate}
 
+\begin{solution}
+  The SAT formula can be constructed by running a BFS traversal over the graph. For each node $v \in V$, assign a variable $x_v$ for it if it is unvisited and a variable $x_u$ for node $u$ where $(v, u) \in E$ if $u$ is unvisited. Then add two clauses $(x_v \lor x_u)$ and $(\neg x_v \lor \neg x_u)$ to $\Phi$. In this way, it can be ensured that the number of variables is $|V|$ and the number of clauses is $2|E|$, both of which are polynomial. Each variable represents a node and each pair of clauses represent an edge. If there exists a solution to $\Phi$ then it also guarantees a solution to the 2-coloring problem, where all nodes assigned with $true$ will be white and nodes of $false$ be black.
+\end{solution}
 
 \newproblem{Reductions via Restrictions}{10+10}
 
 A common strategy to prove NP-Completeness of new problems is to show that problems already known to be NP-Complete are in fact special cases of the new problem. This is often referred to as the ``restriction'' strategy, where the new problem is restricted to be equivalent to a known NP-Complete problem. Use the ``restriction'' strategy to prove the following new problems to be NP-Complete by reducing from the given known NP-Complete problem. You only need to provide the specific manner in which these are restrictions along with a brief description of correctness.
 
 \begin{enumerate}
-\item Give a poly-time reduction to \subgraphIsomorphism{} from \clique.
-\begin{problem}[\subgraphIsomorphism]
-  Given two graphs $G=(V_G, E_G)$ and $H= (V_H, E_H)$, does $G$ contain a subgraph that is isomorphic to $H$? That is, is there a subset $V\subseteq V_G$ and a subset $E\subseteq E_G$ such that $|V| = |V_H|, |E|=|E_H|$, and there exists a one-to-one function $f: V_H \to V$ satisfying $\set{u, v} \in E_h$ if and only if $\set{f(u), f(v)} \in E$?
-\end{problem}
+  \item Give a poly-time reduction to \subgraphIsomorphism{} from \clique.
+        \begin{problem}[\subgraphIsomorphism]
+        Given two graphs $G=(V_G, E_G)$ and $H= (V_H, E_H)$, does $G$ contain a subgraph that is isomorphic to $H$? That is, is there a subset $V\subseteq V_G$ and a subset $E\subseteq E_G$ such that $|V| = |V_H|, |E|=|E_H|$, and there exists a one-to-one function $f: V_H \to V$ satisfying $\set{u, v} \in E_h$ if and only if $\set{f(u), f(v)} \in E$?
+        \end{problem}
 
-\begin{problem}[\clique]
-  Given a graph $G= (V,E)$ and a positive integer $k\leq |V|$, does $G$ contains a clique $V'$ having $|V'| \geq k$? That is, is there a subset $V'\subseteq V$ such that, for every pair of vertices $u, v \in V'$, the edge $\{u, v\} \in E$.
-\end{problem}
+        \begin{problem}[\clique]
+        Given a graph $G= (V,E)$ and a positive integer $k\leq |V|$, does $G$ contains a clique $V'$ having $|V'| \geq k$? That is, is there a subset $V'\subseteq V$ such that, for every pair of vertices $u, v \in V'$, the edge $\{u, v\} \in E$.
+        \end{problem}
 
-\item Give a poly-time reduction to \multiprocessorScheduling{} from \partition.
-\begin{problem}[\multiprocessorScheduling]
-  Given a finite set $A$ of ``tasks'', a positive integer ``length'' $\ell(a)$ for each ``task'' $a\in A$, a positive integer $m$ of ``processors'', and a positive integer ``deadline'' $D$, is there a partition (of the ``tasks'' into the $m$ ``processors'') $A = A_1 \cup A_2 \cup \dots \cup A_m$ of $A$ into $m$ disjoint sets such that each ``processor'' finishes all of its ``tasks'' by the ``deadline'':
-  \begin{align*}
-    \max_{1\leq i\leq m}\left(  \sum_{a\in A_i}\ell(a)   \right) \leq D?
-  \end{align*}
-\end{problem}
+  \item Give a poly-time reduction to \multiprocessorScheduling{} from \partition.
+        \begin{problem}[\multiprocessorScheduling]
+        Given a finite set $A$ of ``tasks'', a positive integer ``length'' $\ell(a)$ for each ``task'' $a\in A$, a positive integer $m$ of ``processors'', and a positive integer ``deadline'' $D$, is there a partition (of the ``tasks'' into the $m$ ``processors'') $A = A_1 \cup A_2 \cup \dots \cup A_m$ of $A$ into $m$ disjoint sets such that each ``processor'' finishes all of its ``tasks'' by the ``deadline'':
+        \begin{align*}
+          \max_{1\leq i\leq m}\left(  \sum_{a\in A_i}\ell(a)   \right) \leq D?
+        \end{align*}
+        \end{problem}
 
-\begin{problem}[\partition]
-  Given a set $A$, a positive integral size function $s(a)$ for all elements $a\in A$, is there a partition of $A$ into two subsets $A_1, A_2$ so that the sum of sizes in $A_1$ is equal to that in $A_2$, that is, $\sum_{i\in A_1}s(i) = \sum_{j\in A_2}s(j)$?
-\end{problem}
+        \begin{problem}[\partition]
+        Given a set $A$, a positive integral size function $s(a)$ for all elements $a\in A$, is there a partition of $A$ into two subsets $A_1, A_2$ so that the sum of sizes in $A_1$ is equal to that in $A_2$, that is, $\sum_{i\in A_1}s(i) = \sum_{j\in A_2}s(j)$?
+        \end{problem}
 \end{enumerate}
 
+\begin{solution}
+  \begin{enumerate}
+    \item The Clique problem is reducible to Subgraph Isomorphism problem in the way that if we can find a subset $V \in V_G$ that is isomorphic to $H$ which is fully-connected then the subset $V$ is automatically a clique to $G$ for $k = |V_H|$ because every pair of nodes in $V$ is guaranteed to constitute an edge. The restriction is that a clique must be a fully-connected subgraph.
+    \item The Partition problem is a special case of Multiprocessor Scheduling problem by the restrictions $m = 2$ and $D = \tfrac{1}{2}\sum_{a\in A}\ell(a)$. If there exists a solution to the multiprocessor scheduling problem with given restrictions, then the solution also satisfies the partition problem.
+  \end{enumerate}
+\end{solution}
 
 
 \newproblem{$K$-weight path in a DAG}{10+15+5}
@@ -107,11 +116,11 @@ We wish to prove that the \textsc{$K$-Path} problem is NP-hard using a reduction
 Show that the \textsc{$K$-Path} problem is NP-hard using a reduction from \textsc{Subset Sum}. That is, given an instance $SS = (A,n,T)$ for \textsc{Subset Sum}, show how to transform that into an instance $KP = (G,w,s,t,K)$ for \textsc{$K$-Path} such that \textsc{Subset Sum} returns true on $SS$ if and only if \textsc{$K$-Path} returns true on $KP$.
 
 \begin{enumerate}[label=\alph*)]
-\item Show how to polynomially reduce an instance of \textsc{Subset Sum} into an instance of \textsc{$K$-Path}. Make sure that your output is a valid instance of \textsc{$K$-Path} (i.e. all weights are non-negative and $s$ and $t$ are well-defined).
+  \item Show how to polynomially reduce an instance of \textsc{Subset Sum} into an instance of \textsc{$K$-Path}. Make sure that your output is a valid instance of \textsc{$K$-Path} (i.e. all weights are non-negative and $s$ and $t$ are well-defined).
 
-\item Show that your reduction is correct. That is, show that \textsc{Subset Sum} returns true on an input instance to your reduction if and only if \textsc{$K$-Path} returns true on the output of your reduction.
+  \item Show that your reduction is correct. That is, show that \textsc{Subset Sum} returns true on an input instance to your reduction if and only if \textsc{$K$-Path} returns true on the output of your reduction.
 
-\item Show that your reduction takes polynomial time.
+  \item Show that your reduction takes polynomial time.
 
 \end{enumerate}
 
@@ -125,13 +134,13 @@ We define the Efficient Recruiting problem as: For a given number $1 \leq k \leq
 Show that the Efficient Recruiting problem is NP-Complete by reducing from Set Cover. In particular show each of the following:
 
 \begin{enumerate}[label=\alph*)]
-\item Show that Efficient Recruiting is in NP.
+  \item Show that Efficient Recruiting is in NP.
 
-\item Show how to polynomially reduce an instance of Set Cover into an instance of Efficient Recruiting. Make sure that your output is a valid instance of Efficient Recruiting.
+  \item Show how to polynomially reduce an instance of Set Cover into an instance of Efficient Recruiting. Make sure that your output is a valid instance of Efficient Recruiting.
 
-\item Show that your reduction is correct. That is, show that Set Covers returns true on an input instance to your reduction if and only if Efficient Recruiting returns true on the output of your reduction.
+  \item Show that your reduction is correct. That is, show that Set Covers returns true on an input instance to your reduction if and only if Efficient Recruiting returns true on the output of your reduction.
 
-\item Show that your reduction takes polynomial time.
+  \item Show that your reduction takes polynomial time.
 \end{enumerate}
 
 
