@@ -124,6 +124,13 @@ Show that the \textsc{$K$-Path} problem is NP-hard using a reduction from \texts
 
 \end{enumerate}
 
+\begin{solution}
+  \begin{enumerate}[label=\alph*] 
+    \item We can create an K-PATH instance by building a DAG where there are $n+1$ nodes linearly aligned. Each node except the last one has two edges pointing to the next node in line, one of which has edge weight of $A_i$ and the other has $0$ weight. Then, add two extra nodes $s, t$ to the graph. Connect node $s$ to all $n+1$ nodes with $n+1$ 0-weight edges, and all $n+1$ nodes to node $t$ with another $n+1$ 0-weight edges. Finally, let $K$ be $T$.
+    \item If we can find an $s-t$ path $P$ in which all edges add up to $K$, then there exists a subset of $A$ that adds up to $T$ since each edge in $P$ corresponds to an element in $A$ and no edge can be counted twice. On the other hand, if there exists a subset of $A$ whose sum equals to $T$, then by traversing edges with weights in that subset we can find a path where the weights sum to $K=T$.
+    \item The reduction takes $O(n)$ time to build the DAG. Thus, it's polynomial.
+  \end{enumerate}
+\end{solution}
 
 \newproblem{Camp Recruiting Problem}{5+10+15+5}
 
@@ -143,5 +150,11 @@ Show that the Efficient Recruiting problem is NP-Complete by reducing from Set C
   \item Show that your reduction takes polynomial time.
 \end{enumerate}
 
-
+\begin{solution}
+  \begin{enumerate}[label=\alph*]
+    \item Given a subset $H \in C$, we can check whether $A_s \cap H \geq 2$ satisfies in polynomial time and that $|H|$ is polynomial. Thus, Efficient Recruiting is in NP.
+    \item For each applicant $1 \leq j \leq m$, use set $B_j \in S$ represents the types of sports that the applicant $j$ is qualified for. Thus, if there exists a subset $H$ satisfies Efficient Recruiting, it is guaranteed that there are at most $k = |H|$ subsets of $S$ whose unite is equal to $S$. Since $|B_j| \leq |S|$ and $j \leq m$, the reduction is polynomial.
+    \item
+  \end{enumerate}
+\end{solution}
 \end{document}
