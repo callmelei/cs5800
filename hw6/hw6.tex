@@ -153,8 +153,9 @@ Show that the Efficient Recruiting problem is NP-Complete by reducing from Set C
 \begin{solution}
   \begin{enumerate}[label=\alph*]
     \item Given a subset $H \in C$, we can check whether $A_s \cap H \geq 2$ satisfies in polynomial time and that $|H|$ is polynomial. Thus, Efficient Recruiting is in NP.
-    \item For each applicant $1 \leq j \leq m$, use set $B_j \in S$ represents the types of sports that the applicant $j$ is qualified for. Thus, if there exists a subset $H$ satisfies Efficient Recruiting, it is guaranteed that there are at most $k = |H|$ subsets of $S$ whose unite is equal to $S$. Since $|B_j| \leq |S|$ and $j \leq m$, the reduction is polynomial.
-    \item
+    \item We can create an instance of Efficient Recruiting by first creating a new set $S'$ where each subject repeats twice. For each applicant $1 \leq j \leq m$, use set $B_j \in S$ represents the types of sports that the applicant $j$ is qualified for. Our goal is to find a set $H$ of $B_j$ such that $|H| <= k$.
+    \item If there exists a subset $H \in C$ satisfies requirements, it is guaranteed that there are at most $k = |H|$ subsets of $S'$ whose unite is equal to $S'$. On the other hand, if there are $k$ subsets of $S'$ whose unite is $S'$ then each subset represents an applicant and it's ensured that $A_s \cap H \geq 2$.
+    \item Since $|B_j| \leq |S|$ and $j \leq m$, the reduction is polynomial.
   \end{enumerate}
 \end{solution}
 \end{document}
